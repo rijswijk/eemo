@@ -330,6 +330,19 @@ doc_DATA +=				src/plugins/dnsstats/cacti/README-dnsstats \
 					src/plugins/dnsstats/cacti/eemo_cacti_protocol_types.xml \
 					src/plugins/dnsstats/cacti/eemo_cacti_query_classes.xml
 
+# Response statistics plugin
+lib_LTLIBRARIES += 			lib/libeemo_respstats.la
+
+lib_libeemo_respstats_la_CFLAGS =	-Isrc -Isrc/plugins -Isrc/plugins/respstats @LIBCONFIG_CFLAGS@
+
+lib_libeemo_respstats_la_SOURCES =	src/plugins/respstats/eemo_respstats_entry.c \
+					src/plugins/respstats/eemo_respstats_stats.c \
+					src/plugins/respstats/eemo_respstats_stats.h \
+					src/plugins/eemo_plugin_log.c \
+					src/plugins/eemo_plugin_log.h
+
+lib_libeemo_respstats_la_LDFLAGS =	-version-info @EEMO_DNSSTATS_VERSION_INFO@
+
 # dnszabbix plugin
 lib_LTLIBRARIES += 			lib/libeemo_dnszabbix.la
 
