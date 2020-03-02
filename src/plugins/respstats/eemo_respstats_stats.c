@@ -215,6 +215,19 @@ void write_stats(void)
 	}
 }
 
+static void eemo_respstats_stats_reset_alarm(void)
+{
+	if (stat_emit_interval > 0)
+	{
+		time_t	now		= time(NULL);
+		time_t	next		= now + stat_emit_interval;
+		int	alarm_interval	= ((next / stat_emit_interval) * stat_emit_interval) - now;
+
+		DEBUG_MSG("Next statistics dump after %ds", alarm_interval);
+		alarm(alarm_interval);
+	}
+}
+
 /* Signal handler for alarms & user signals */
 void signal_handler(int signum)
 {
@@ -233,7 +246,7 @@ void signal_handler(int signum)
 	/* Set the new alarm if necessary */
 	if (signum == SIGALRM)
 	{
-		alarm(stat_emit_interval);
+		eemo_respstats_stats_reset_alarm();
 	}
 }
 
@@ -290,7 +303,7 @@ void eemo_respstats_stats_init(int emit_interval, char* stats_file, int append_f
 	signal(SIGALRM, signal_handler);
 
 	/* Set the alarm */
-	alarm(stat_emit_interval);
+	eemo_respstats_stats_reset_alarm();
 }
 
 /* Uninitialise the DNS query counter module */
@@ -425,7 +438,7 @@ eemo_rv eemo_respstats_stats_handleqr(eemo_ip_packet_info ip_info, int is_tcp, c
 			if (dns_packet->has_edns0_client_subnet)
 			{
 				edns0_ctr.EDNS0_W_ECS[stats_index]++;
-				INFO_MSG("Response with EDNS Client Subnet received from %s for scope %s/%d", ip_info.ip_src, dns_packet->edns0_client_subnet_ip, dns_packet->edns0_client_subnet_res_scope);
+				INFO_MSG("Response with EDNS Client Subnet received querying for %s from %s for scope %s/%d", dns_packet->questions->qname, ip_info.ip_src, dns_packet->edns0_client_subnet_ip, dns_packet->edns0_client_subnet_res_scope);
 			}
 			else
 			{
